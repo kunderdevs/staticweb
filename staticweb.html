@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enterprise Commercial Intelligence — Advanced Pricing Waterfall Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070c15; --panel:#101a2b; --panel-2:#152238; --border:#213149;
+    --border-soft:rgba(255,255,255,0.05); --text:#e6edf7; --muted:#8ba0be;
+    --muted-2:#63789a; --accent:#38bdf8; --accent-dim:#7dd3fc;
+    --good:#22c55e; --bad:#ef4444; --warn:#f59e0b; --purple:#a855f7;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(1400px 700px at 15% -15%, #16263f 0%, #0a1220 50%, #060a12 100%) fixed;
+    color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    font-size:13px;-webkit-font-smoothing:antialiased;min-height:100vh;
+  }
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:#0a1220;}
+  ::-webkit-scrollbar-thumb{background:#22314d;border-radius:5px;border:2px solid #0a1220;}
+  ::-webkit-scrollbar-thumb:hover{background:#2e4266;}
+
+  .boot{padding:60px 20px;text-align:center;color:#63789a;font-size:13px;}
+  .boot .sp{
+    width:26px;height:26px;margin:0 auto 14px;border-radius:50%;
+    border:3px solid rgba(56,189,248,0.18);border-top-color:#38bdf8;
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .boot-error{
+    margin:40px auto;max-width:760px;padding:22px 24px;border-radius:12px;
+    background:#1a1220;border:1px solid #7f1d1d;color:#fecaca;
+    font-family:'Inter',sans-serif;text-align:left;
+  }
+  .boot-error h2{margin:0 0 10px;font-size:15px;color:#fca5a5;}
+  .boot-error pre{
+    white-space:pre-wrap;word-break:break-word;font-size:11.5px;
+    background:rgba(0,0,0,0.35);padding:12px;border-radius:8px;
+    max-height:280px;overflow:auto;color:#fda4af;margin:0 0 10px;
+  }
+  .boot-error p{margin:0;font-size:12px;color:#f0abab;line-height:1.6;}
+
+  .appbar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:12px 20px;border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,rgba(21,34,56,0.92) 0%,rgba(13,21,35,0.92) 100%);
+    backdrop-filter:blur(10px);position:sticky;top:0;z-index:40;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:13px;min-width:0;}
+  .logo{
+    width:42px;height:42px;border-radius:11px;flex:none;
+    background:linear-gradient(135deg,#38bdf8 0%,#6366f1 55%,#a855f7 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:14px;letter-spacing:-0.5px;color:#05101f;
+    box-shadow:0 4px 18px rgba(56,189,248,0.28);
+  }
+  .brand h1{margin:0;font-size:16.5px;font-weight:700;letter-spacing:-0.3px;line-height:1.15;}
+  .brand .module{font-size:11.5px;color:var(--accent-dim);font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-top:2px;}
+  .brand .subtitle{font-size:11px;color:var(--muted-2);margin-top:2px;}
+  .appbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;
+    font-size:11px;font-weight:600;border:1px solid var(--border);
+    background:rgba(255,255,255,0.02);color:var(--muted);
+  }
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);}
+  .btn{
+    border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--text);
+    padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
+    transition:all .15s;font-family:inherit;
+  }
+  .btn:hover{background:rgba(56,189,248,0.12);border-color:rgba(56,189,248,0.5);color:var(--accent-dim);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn.primary{background:linear-gradient(135deg,rgba(56,189,248,0.22),rgba(99,102,241,0.22));border-color:rgba(56,189,248,0.5);color:var(--accent-dim);}
+
+  .filters{
+    padding:11px 20px;border-bottom:1px solid var(--border);
+    background:rgba(12,20,34,0.75);position:sticky;top:67px;z-index:30;
+    display:flex;flex-direction:column;gap:8px;backdrop-filter:blur(8px);
+  }
+  .fg{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .fg-label{font-size:10px;font-weight:700;color:var(--muted-2);text-transform:uppercase;letter-spacing:0.7px;min-width:78px;flex:none;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip{
+    border:1px solid var(--border);background:rgba(255,255,255,0.02);color:var(--muted);
+    padding:4px 11px;border-radius:999px;font-size:11.5px;font-weight:500;cursor:pointer;
+    transition:all .14s;font-family:inherit;white-space:nowrap;
+  }
+  .chip:hover{color:var(--text);border-color:#3a4d70;background:rgba(255,255,255,0.05);}
+  .chip.active{background:rgba(56,189,248,0.16);border-color:rgba(56,189,248,0.65);color:var(--accent-dim);font-weight:600;box-shadow:0 0 0 1px rgba(56,189,248,0.12);}
+
+  .main{padding:16px 20px 40px;max-width:1920px;margin:0 auto;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:12px;margin-bottom:16px;}
+  .kpi{
+    background:linear-gradient(160deg,var(--panel-2) 0%,var(--panel) 100%);
+    border:1px solid var(--border);border-radius:12px;padding:13px 15px;
+    position:relative;overflow:hidden;
+  }
+  .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kpi-accent,#38bdf8);opacity:.85;}
+  .kpi-label{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.6px;}
+  .kpi-value{font-size:22px;font-weight:700;letter-spacing:-0.6px;margin-top:5px;line-height:1.1;}
+  .kpi-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;}
+  .kpi-delta{font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:3px;}
+  .kpi-delta.up{color:var(--good);} .kpi-delta.down{color:var(--bad);} .kpi-delta.flat{color:var(--muted-2);}
+  .kpi-sub{font-size:10.5px;color:var(--muted-2);}
+  .spark{display:block;opacity:.9;}
+
+  .tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto;}
+  .tab{
+    padding:10px 17px;background:none;border:none;color:var(--muted);cursor:pointer;
+    font-size:12.5px;font-weight:600;border-bottom:2px solid transparent;transition:all .15s;
+    font-family:inherit;white-space:nowrap;
+  }
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--accent-dim);border-bottom-color:var(--accent);}
+
+  .card{
+    background:linear-gradient(165deg,rgba(21,34,56,0.85) 0%,rgba(14,23,38,0.9) 100%);
+    border:1px solid var(--border);border-radius:13px;padding:15px 17px;
+    box-shadow:0 3px 20px rgba(0,0,0,0.22);
+  }
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
+  .card-title{font-size:13px;font-weight:700;letter-spacing:-0.1px;}
+  .card-desc{font-size:11px;color:var(--muted-2);margin-top:2px;line-height:1.45;max-width:640px;}
+  .card-tools{display:flex;gap:5px;flex-wrap:wrap;}
+  .mini-chip{
+    border:1px solid var(--border);background:rgba(255,255,255,0.02);color:var(--muted);
+    padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:600;cursor:pointer;
+    font-family:inherit;transition:all .14s;
+  }
+  .mini-chip:hover{color:var(--text);border-color:#3a4d70;}
+  .mini-chip.active{background:rgba(56,189,248,0.16);border-color:rgba(56,189,248,0.55);color:var(--accent-dim);}
+
+  .grid{display:grid;gap:14px;}
+  .grid-2{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);}
+  .grid-2b{grid-template-columns:repeat(2,minmax(0,1fr));}
+  @media (max-width:1180px){ .grid-2,.grid-2b{grid-template-columns:minmax(0,1fr);} }
+
+  .insights{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;}
+  .insight{
+    background:rgba(56,189,248,0.045);border:1px solid rgba(56,189,248,0.16);
+    border-left:3px solid var(--accent);border-radius:9px;padding:10px 13px;
+    font-size:11.8px;line-height:1.55;color:#c4d4e8;
+  }
+  .insight b{color:#fff;font-weight:600;}
+  .insight.warn{background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.2);border-left-color:var(--warn);}
+  .insight.bad{background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.2);border-left-color:var(--bad);}
+  .insight.good{background:rgba(34,197,94,0.05);border-color:rgba(34,197,94,0.2);border-left-color:var(--good);}
+
+  .table-wrap{max-height:560px;overflow:auto;border-radius:9px;border:1px solid var(--border-soft);}
+  table.data{width:100%;border-collapse:collapse;font-size:12px;}
+  table.data th{
+    text-align:left;padding:9px 11px;color:var(--muted);font-weight:600;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);
+    cursor:pointer;user-select:none;white-space:nowrap;position:sticky;top:0;background:#111c2e;z-index:2;
+  }
+  table.data th:hover{color:var(--accent-dim);}
+  table.data th.num, table.data td.num{text-align:right;}
+  table.data td{padding:7px 11px;border-bottom:1px solid var(--border-soft);white-space:nowrap;color:#cbd8ea;}
+  table.data tbody tr{cursor:pointer;transition:background .1s;}
+  table.data tbody tr:hover{background:rgba(56,189,248,0.07);}
+  table.data tbody tr.sel{background:rgba(56,189,248,0.13);}
+  .bar-cell{display:flex;align-items:center;gap:7px;justify-content:flex-end;}
+  .bar-track{width:52px;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;flex:none;}
+  .bar-fill{height:100%;border-radius:3px;}
+
+  .badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .b-floor{background:rgba(239,68,68,0.16);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
+  .b-btarget{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
+  .b-target{background:rgba(34,197,94,0.14);color:#86efac;border:1px solid rgba(34,197,94,0.28);}
+  .b-premium{background:rgba(168,85,247,0.15);color:#d8b4fe;border:1px solid rgba(168,85,247,0.3);}
+
+  input[type=text], input[type=search]{
+    background:rgba(255,255,255,0.035);border:1px solid var(--border);color:var(--text);
+    padding:6px 11px;border-radius:8px;font-size:12px;font-family:inherit;outline:none;transition:all .15s;
+  }
+  input[type=text]:focus,input[type=search]:focus{border-color:rgba(56,189,248,0.6);background:rgba(56,189,248,0.06);}
+  input[type=text]::placeholder,input[type=search]::placeholder{color:var(--muted-2);}
+
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;
+    background:linear-gradient(90deg,#38bdf8 0%,#6366f1 100%);outline:none;margin:7px 0;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#e2f4ff;
+    border:2px solid #0b1220;cursor:pointer;box-shadow:0 0 0 3px rgba(56,189,248,0.25);
+  }
+  input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#e2f4ff;border:2px solid #0b1220;cursor:pointer;}
+
+  .slider-row{margin-bottom:15px;}
+  .slider-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .slider-name{font-size:11.5px;color:#b9c9de;font-weight:500;}
+  .slider-val{font-size:12.5px;font-weight:700;color:var(--accent-dim);font-variant-numeric:tabular-nums;}
+
+  .stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-soft);font-size:12px;}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .k{color:var(--muted);}
+  .stat-row .v{font-weight:600;font-variant-numeric:tabular-nums;}
+
+  .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:260px;color:var(--muted-2);gap:8px;font-size:12.5px;}
+  .footer{
+    margin-top:26px;padding-top:14px;border-top:1px solid var(--border);
+    font-size:10.5px;color:var(--muted-2);display:flex;justify-content:space-between;
+    gap:12px;flex-wrap:wrap;line-height:1.6;
+  }
+  .legend-inline{display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:8px;}
+  .legend-inline span{display:inline-flex;align-items:center;gap:5px;}
+  .swatch{width:9px;height:9px;border-radius:2px;display:inline-block;}
+</style>
+</head>
+<body>
+
+<div id="root">
+  <div class="boot">
+    <div class="sp"></div>
+    Initialising Enterprise Commercial Intelligence…
+  </div>
+</div>
+
+<!-- ============================ LIBRARIES (with fallbacks) ============================ -->
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script>window.React||document.write('<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"><\/script>');</script>
+
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script>window.ReactDOM||document.write('<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"><\/script>');</script>
+
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.27.0/plotly.min.js"></script>
+<script>window.Plotly||document.write('<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"><\/script>');</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.6/babel.min.js"></script>
+<script>window.Babel||document.write('<script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"><\/script>');</script>
+
+<!-- ============================ APPLICATION SOURCE ============================ -->
+<script type="text/plain" id="app-source">
+const { useState, useMemo, useEffect, useRef } = React;
+
+/* ==========================================================================
+   1. UTILITIES
+   ========================================================================== */
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const sumArr = (arr) => arr.reduce((s, x) => s + x, 0);
+
+function fmtMoney(v, digits) {
+  const d = digits === undefined ? 1 : digits;
+  const sign = v < 0 ? '-' : '';
+  const av = Math.abs(v);
+  if (av >= 1e9) return sign + '$' + (av / 1e9).toFixed(2) + 'B';
+  if (av >= 1e6) return sign + '$' + (av / 1e6).toFixed(d) + 'M';
+  if (av >= 1e3) return sign + '$' + (av / 1e3).toFixed(0) + 'K';
+  return sign + '$' + av.toFixed(0);
+}
+const fmtPct = (v, d) => (v * 100).toFixed(d === undefined ? 1 : d) + '%';
+const fmtNum = (v) => v.toLocaleString('en-US');
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ==========================================================================
+   2. DOMAIN CONSTANTS
+   ========================================================================== */
+const REGIONS = ['North America', 'EMEA', 'APAC', 'LATAM'];
+const SEGMENTS = ['Enterprise', 'Mid-Market', 'SMB', 'Public Sector'];
+const CHANNELS = ['Direct', 'Partner', 'Distributor', 'Marketplace'];
+const BANDS = ['Below Floor', 'Below Target', 'On Target', 'Premium'];
+
+const PRODUCTS = [
+  { name: 'Cloud Platform',   listUnit: 1200, costRatio: 0.50 },
+  { name: 'Data Analytics',   listUnit: 1850, costRatio: 0.46 },
+  { name: 'Security Suite',   listUnit: 980,  costRatio: 0.55 },
+  { name: 'Integration Hub',  listUnit: 720,  costRatio: 0.48 },
+  { name: 'Managed Services', listUnit: 2400, costRatio: 0.60 }
+];
+const PRODUCT_NAMES = PRODUCTS.map(p => p.name);
+
+const LEAK_KEYS = [
+  { key: 'std',     label: 'Standard Discount',   color: '#ef4444' },
+  { key: 'reb',     label: 'Contract Rebates',    color: '#f97316' },
+  { key: 'promo',   label: 'Promotional Allow.',  color: '#f59e0b' },
+  { key: 'comp',    label: 'Competitive Adj.',    color: '#eab308' },
+  { key: 'terms',   label: 'Payment Terms',       color: '#a855f7' },
+  { key: 'off',     label: 'Off-Invoice Rebates', color: '#ec4899' },
+  { key: 'freight', label: 'Freight & Logistics', color: '#14b8a6' }
+];
+
+const COST_KEYS = [
+  { key: 'pocket', label: 'Pocket Margin',      color: '#22c55e' },
+  { key: 'cogs',   label: 'COGS',               color: '#475569' },
+  { key: 'svc',    label: 'Service & Warranty', color: '#94a3b8' }
+];
+
+const PLOT_FONT = { family: 'Inter, system-ui, sans-serif', size: 11, color: '#a9bcd6' };
+const PLOT_BASE_LAYOUT = {
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  font: PLOT_FONT,
+  margin: { l: 62, r: 22, t: 18, b: 52 },
+  hoverlabel: { bgcolor: '#132038', bordercolor: '#2b3f5e', font: { color: '#e6edf7', size: 11.5, family: 'Inter, sans-serif' } }
+};
+
+/* ==========================================================================
+   3. SYNTHETIC DATA GENERATION
+   ========================================================================== */
+function buildMonths(count) {
+  const out = [];
+  const now = new Date();
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    out.push({
+      idx: count - 1 - i,
+      key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'),
+      label: d.toLocaleString('en-US', { month: 'short' }) + " '" + String(d.getFullYear()).slice(2)
+    });
+  }
+  return out;
+}
+const MONTHS = buildMonths(24);
+
+const NAME_A = ['Northwind','Vertex','Acme','Helios','Quantum','Meridian','Cobalt','Ironclad','Lumen','Apex','Zephyr','Orion','Summit','Pinnacle','Cascade','Vanguard','Everest','Nimbus','Solstice','Titan','Aurora','Beacon','Crestline','Delta','Ember','Forge','Granite','Harbor','Insight','Juniper','Kestrel','Lattice','Momentum','Novara','Onyx','Providence','Quarry','Redwood','Sable','Terranova'];
+const NAME_B = ['Industries','Systems','Group','Holdings','Technologies','Logistics','Financial','Health','Energy','Retail','Manufacturing','Networks','Labs','Partners','Corp','Dynamics','Solutions','Analytics','Global','Ventures'];
+
+function generateData() {
+  const rnd = mulberry32(0x5EED2026);
+  const between = (a, b) => a + rnd() * (b - a);
+  const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+  const weighted = (items, weights) => {
+    const t = sumArr(weights);
+    let r = rnd() * t;
+    for (let i = 0; i < items.length; i++) { r -= weights[i]; if (r <= 0) return items[i]; }
+    return items[items.length - 1];
+  };
+
+  const customers = [];
+  const used = new Set();
+  let guard = 0;
+  while (customers.length < 190 && guard++ < 8000) {
+    const nm = pick(NAME_A) + ' ' + pick(NAME_B);
+    if (used.has(nm)) continue;
+    used.add(nm);
+
+    const segment = weighted(SEGMENTS, [26, 34, 28, 12]);
+    const region = weighted(REGIONS, [40, 30, 19, 11]);
+    let channel;
+    if (segment === 'Enterprise') channel = weighted(CHANNELS, [55, 35, 5, 5]);
+    else if (segment === 'Mid-Market') channel = weighted(CHANNELS, [40, 32, 18, 10]);
+    else if (segment === 'SMB') channel = weighted(CHANNELS, [18, 22, 32, 28]);
+    else channel = weighted(CHANNELS, [45, 30, 20, 5]);
+
+    customers.push({ id: 'C' + String(customers.length + 1).padStart(4, '0'), name: nm, segment, region, channel });
+  }
+
+  const deals = [];
+  let dealId = 1;
+
+  const SEG_BASE = { 'Enterprise': 0.195, 'Mid-Market': 0.155, 'SMB': 0.115, 'Public Sector': 0.175 };
+  const CHAN_ADJ = { 'Direct': 0, 'Partner': 0.028, 'Distributor': 0.055, 'Marketplace': 0.018 };
+  const REG_ADJ = { 'North America': 0, 'EMEA': 0.014, 'APAC': 0.028, 'LATAM': 0.038 };
+  const PROD_ADJ = { 'Cloud Platform': 0, 'Data Analytics': -0.015, 'Security Suite': 0.010, 'Integration Hub': 0.005, 'Managed Services': 0.022 };
+  const QTY_RANGE = { 'Enterprise': [40, 320], 'Mid-Market': [15, 120], 'SMB': [3, 40], 'Public Sector': [60, 500] };
+  const DEAL_BASE = { 'Enterprise': 34, 'Mid-Market': 24, 'SMB': 12, 'Public Sector': 20 };
+
+  for (let ci = 0; ci < customers.length; ci++) {
+    const cust = customers[ci];
+    const nDeals = Math.max(4, Math.round(DEAL_BASE[cust.segment] * between(0.6, 1.5)));
+
+    for (let k = 0; k < nDeals; k++) {
+      const m = MONTHS[Math.floor(rnd() * MONTHS.length)];
+      const prod = weighted(PRODUCTS, [28, 22, 20, 18, 12]);
+      const qr = QTY_RANGE[cust.segment];
+      const qty = Math.max(1, Math.round(between(qr[0], qr[1]) * between(0.65, 1.35)));
+      const listUnit = prod.listUnit * between(0.90, 1.18);
+      const list = qty * listUnit;
+
+      const trend = 1 - 0.10 * (m.idx / 23);
+      const sizeAdj = 0.14 * Math.min(1, qty / 250);
+
+      let std = (SEG_BASE[cust.segment] + CHAN_ADJ[cust.channel] + REG_ADJ[cust.region] + PROD_ADJ[prod.name] + sizeAdj) * trend + between(-0.05, 0.05);
+      std = clamp(std, 0.020, 0.50);
+
+      const reb = clamp(between(0.004, 0.055) * (cust.segment === 'Enterprise' ? 1.35 : 1) * trend, 0, 0.09);
+      const promo = rnd() < 0.38 ? clamp(between(0.012, 0.075) * (rnd() < 0.4 ? 1.5 : 1), 0, 0.12) : 0;
+      const comp = rnd() < 0.32 ? between(0.010, 0.060) : 0;
+      const terms = rnd() < 0.55 ? between(0.005, 0.020) : 0;
+
+      const stdAmt = list * std;
+      const rebAmt = list * reb;
+      const promoAmt = list * promo;
+      const compAmt = list * comp;
+      const termsAmt = list * terms;
+
+      const invoice = list - stdAmt - rebAmt - promoAmt - compAmt - termsAmt;
+
+      const offR = between(0.003, 0.032);
+      const frtR = (cust.channel === 'Direct' && rnd() < 0.55) ? 0 : between(0.004, 0.022);
+      const offAmt = invoice * offR;
+      const frtAmt = invoice * frtR;
+      const net = invoice - offAmt - frtAmt;
+
+      const cogs = list * prod.costRatio * between(0.93, 1.10);
+      const svc = list * between(0.008, 0.032);
+      const pocket = net - cogs - svc;
+
+      const realization = net / list;
+      const floor = prod.costRatio + 0.06;
+      const target = prod.costRatio + 0.16;
+      const stretch = prod.costRatio + 0.26;
+      const band = realization < floor ? 'Below Floor'
+                 : realization < target ? 'Below Target'
+                 : realization < stretch ? 'On Target' : 'Premium';
+
+      deals.push({
+        id: 'D' + String(dealId++).padStart(5, '0'),
+        mIdx: m.idx,
+        monthKey: m.key,
+        monthLabel: m.label,
+        customerId: cust.id,
+        customer: cust.name,
+        segment: cust.segment,
+        region: cust.region,
+        channel: cust.channel,
+        product: prod.name,
+        qty: qty,
+        listUnit: listUnit,
+        list: list,
+        std: stdAmt, reb: rebAmt, promo: promoAmt, comp: compAmt, terms: termsAmt,
+        invoice: invoice,
+        off: offAmt, freight: frtAmt,
+        net: net,
+        cogs: cogs, svc: svc, pocket: pocket,
+        realization: realization,
+        pocketPct: net > 0 ? pocket / net : 0,
+        discount: 1 - net / list,
+        band: band
+      });
+    }
+  }
+
+  return { customers: customers, deals: deals };
+}
+
+const DATA = generateData();
+const ALL_DEALS = DATA.deals;
+const ALL_CUSTOMERS = DATA.customers;
+
+/* ==========================================================================
+   4. AGGREGATION HELPERS
+   ========================================================================== */
+function emptyAgg() {
+  return {
+    n: 0, qty: 0, list: 0, std: 0, reb: 0, promo: 0, comp: 0, terms: 0,
+    invoice: 0, off: 0, freight: 0, net: 0, cogs: 0, svc: 0, pocket: 0,
+    bandNet: { 'Below Floor': 0, 'Below Target': 0, 'On Target': 0, 'Premium': 0 },
+    bandCount: { 'Below Floor': 0, 'Below Target': 0, 'On Target': 0, 'Premium': 0 }
+  };
+}
+function addDeal(a, d) {
+  a.n++; a.qty += d.qty; a.list += d.list;
+  a.std += d.std; a.reb += d.reb; a.promo += d.promo; a.comp += d.comp; a.terms += d.terms;
+  a.invoice += d.invoice; a.off += d.off; a.freight += d.freight;
+  a.net += d.net; a.cogs += d.cogs; a.svc += d.svc; a.pocket += d.pocket;
+  a.bandNet[d.band] += d.net; a.bandCount[d.band]++;
+  return a;
+}
+function aggregate(deals) {
+  const a = emptyAgg();
+  for (let i = 0; i < deals.length; i++) addDeal(a, deals[i]);
+  return a;
+}
+function groupAggregate(deals, keyFn) {
+  const map = new Map();
+  for (let i = 0; i < deals.length; i++) {
+    const d = deals[i];
+    const k = keyFn(d);
+    let a = map.get(k);
+    if (!a) { a = emptyAgg(); a.key = k; map.set(k, a); }
+    addDeal(a, d);
+  }
+  return map;
+}
+function leakageTotal(a) {
+  return a.std + a.reb + a.promo + a.comp + a.terms + a.off + a.freight;
+}
+
+/* ==========================================================================
+   5. CHART PRIMITIVES
+   ========================================================================== */
+function Plot(props) {
+  const ref = useRef(null);
+  const depsKey = JSON.stringify(props.data).length + '|' + JSON.stringify(props.layout).length + '|' +
+                  props.data.length + '|' + props.height;
+
+  useEffect(function () {
+    const el = ref.current;
+    if (!el) return;
+    if (!window.Plotly) {
+      el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;' +
+                     'color:#63789a;font-size:12px;text-align:center;padding:20px;">' +
+                     'Chart library unavailable. Check your network connection to cdn.plot.ly / cdn.jsdelivr.net.</div>';
+      return;
+    }
+    const cfg = Object.assign(
+      { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'] },
+      props.config || {}
+    );
+    try {
+      window.Plotly.react(el, props.data, props.layout, cfg);
+    } catch (e) {
+      console.error('Plotly error', e);
+    }
+  }, [depsKey]);
+
+  useEffect(function () {
+    const el = ref.current;
+    let ro = null;
+    if (el && window.ResizeObserver) {
+      ro = new ResizeObserver(function () {
+        if (window.Plotly) { try { window.Plotly.Plots.resize(el); } catch (e) {} }
+      });
+      ro.observe(el);
+    }
+    return function () {
+      if (ro) ro.disconnect();
+      if (el && window.Plotly) { try { window.Plotly.purge(el); } catch (e) {} }
+    };
+  }, []);
+
+  return <div ref={ref} style={{ width: '100%', height: (props.height || 340) + 'px' }} />;
+}
+
+function Sparkline({ values, color, width, height }) {
+  const w = width || 96, h = height || 28;
+  const gidRef = useRef('sg' + Math.random().toString(36).slice(2, 9));
+  if (!values || values.length < 2) return <svg width={w} height={h}></svg>;
+  const min = Math.min.apply(null, values);
+  const max = Math.max.apply(null, values);
+  const rng = (max - min) || 1;
+  const pts = values.map(function (v, i) {
+    return [
+      (i / (values.length - 1)) * w,
+      h - ((v - min) / rng) * (h - 5) - 2.5
+    ];
+  });
+  const d = pts.map(function (p, i) {
+    return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+  }).join(' ');
+  const area = d + ' L ' + w + ' ' + h + ' L 0 ' + h + ' Z';
+  const gid = gidRef.current;
+  return (
+    <svg width={w} height={h} className="spark">
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color || '#38bdf8'} stopOpacity="0.32" />
+          <stop offset="100%" stopColor={color || '#38bdf8'} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={'url(#' + gid + ')'} />
+      <path d={d} fill="none" stroke={color || '#38bdf8'} strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/* ==========================================================================
+   6. WATERFALL BUILDERS
+   ========================================================================== */
+function waterfallSteps(a) {
+  return [
+    { label: 'List Price',           val: a.list,     type: 'absolute' },
+    { label: 'Standard Discount',    val: -a.std,     type: 'relative' },
+    { label: 'Contract Rebates',     val: -a.reb,     type: 'relative' },
+    { label: 'Promotional Allow.',   val: -a.promo,   type: 'relative' },
+    { label: 'Competitive Adj.',     val: -a.comp,    type: 'relative' },
+    { label: 'Payment Terms',        val: -a.terms,   type: 'relative' },
+    { label: 'Invoice Price',        val: 0,          type: 'total' },
+    { label: 'Off-Invoice Rebates',  val: -a.off,     type: 'relative' },
+    { label: 'Freight & Logistics',  val: -a.freight, type: 'relative' },
+    { label: 'Net Price',            val: 0,          type: 'total' },
+    { label: 'COGS',                 val: -a.cogs,    type: 'relative' },
+    { label: 'Service & Warranty',   val: -a.svc,     type: 'relative' },
+    { label: 'Pocket Margin',        val: 0,          type: 'total' }
+  ];
+}
+
+function WaterfallChart({ agg, mode, height, showText }) {
+  const built = useMemo(function () {
+    const steps = waterfallSteps(agg);
+    const f = mode === 'pct' ? (agg.list ? 100 / agg.list : 0) : 1;
+    const fmt = function (v) { return mode === 'pct' ? (v * f).toFixed(1) + '%' : fmtMoney(v); };
+    let run = 0;
+    const y = [], text = [], measure = [], x = [];
+    steps.forEach(function (s) {
+      if (s.type === 'absolute') { run = s.val; y.push(s.val * f); text.push(fmt(s.val)); }
+      else if (s.type === 'relative') { run += s.val; y.push(s.val * f); text.push(fmt(s.val)); }
+      else { y.push(run * f); text.push(fmt(run)); }
+      measure.push(s.type);
+      x.push(s.label);
+    });
+    return { x: x, y: y, text: text, measure: measure };
+  }, [agg, mode]);
+
+  const data = useMemo(function () {
+    return [{
+      type: 'waterfall',
+      orientation: 'v',
+      measure: built.measure,
+      x: built.x,
+      y: built.y,
+      text: showText === false ? undefined : built.text,
+      textposition: 'outside',
+      cliponaxis: false,
+      textfont: { size: 9.5, color: '#b8cae2', family: 'Inter, sans-serif' },
+      connector: { line: { color: 'rgba(160,190,225,0.28)', width: 1, dash: 'dot' } },
+      increasing: { marker: { color: '#22c55e' } },
+      decreasing: { marker: { color: '#ef4444' } },
+      totals: { marker: { color: '#3b82f6' } },
+      hovertemplate: '%{x}<br><b>%{text}</b><extra></extra>'
+    }];
+  }, [built, showText]);
+
+  const layout = useMemo(function () {
+    return Object.assign({}, PLOT_BASE_LAYOUT, {
+      height: height || 440,
+      margin: { l: 66, r: 24, t: 24, b: 92 },
+      showlegend: false,
+      xaxis: {
+        tickangle: -38,
+        tickfont: { size: 9.5, color: '#8ba0be' },
+        gridcolor: 'rgba(255,255,255,0.03)',
+        zeroline: false, showline: false
+      },
+      yaxis: {
+        title: { text: mode === 'pct' ? '% of List Price' : 'USD', font: { size: 10.5, color: '#7f96b5' } },
+        gridcolor: 'rgba(255,255,255,0.055)',
+        zeroline: true, zerolinecolor: 'rgba(255,255,255,0.22)', zerolinewidth: 1,
+        tickprefix: mode === 'pct' ? '' : '$',
+        ticksuffix: mode === 'pct' ? '%' : '',
+        tickformat: mode === 'pct' ? '.0f' : '.2s',
+        tickfont: { size: 10 }
+      }
+    });
+  }, [mode, height]);
+
+  return <Plot data={data} layout={layout} height={height || 440} />;
+}
+
+/* ==========================================================================
+   7. SMALL UI COMPONENTS
+   ========================================================================== */
+function FilterGroup({ label, options, selected, onChange }) {
+  return (
+    <div className="fg">
+      <span className="fg-label">{label}</span>
+      <div className="chips">
+        <button className={'chip' + (selected.length === 0 ? ' active' : '')} onClick={function () { onChange([]); }}>All</button>
+        {options.map(function (o) {
+          const on = selected.indexOf(o) >= 0;
+          return (
+            <button key={o}
+              className={'chip' + (on ? ' active' : '')}
+              onClick={function () {
+                onChange(on ? selected.filter(function (x) { return x !== o; }) : selected.concat([o]));
+              }}>
+              {o}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Kpi({ label, value, sub, delta, deltaIsGood, sparkValues, sparkColor, accent }) {
+  let deltaEl;
+  if (delta !== null && delta !== undefined && isFinite(delta)) {
+    const cls = Math.abs(delta) < 0.0005 ? 'flat' : (deltaIsGood ? 'up' : 'down');
+    const arrow = Math.abs(delta) < 0.0005 ? '→' : (delta > 0 ? '▲' : '▼');
+    deltaEl = <span className={'kpi-delta ' + cls}>{arrow} {Math.abs(delta * 100).toFixed(1)}%</span>;
+  } else {
+    deltaEl = <span className="kpi-delta flat">—</span>;
+  }
+  return (
+    <div className="kpi" style={{ '--kpi-accent': accent || '#38bdf8' }}>
+      <div className="kpi-label">{label}</div>
+      <div className="kpi-value">{value}</div>
+      <div className="kpi-foot">
+        <div>
+          {deltaEl}
+          {sub ? <div className="kpi-sub">{sub}</div> : null}
+        </div>
+        {sparkValues ? <Sparkline values={sparkValues} color={sparkColor || accent || '#38bdf8'} /> : null}
+      </div>
+    </div>
+  );
+}
+
+function BandBadge({ band }) {
+  const cls = band === 'Below Floor' ? 'b-floor'
+            : band === 'Below Target' ? 'b-btarget'
+            : band === 'On Target' ? 'b-target' : 'b-premium';
+  return <span className={'badge ' + cls}>{band}</span>;
+}
+
+function EmptyState() {
+  return (
+    <div className="card">
+      <div className="empty">
+        <div style={{ fontSize: 26, opacity: 0.4 }}>◍</div>
+        <div>No transactions match the current filter selection.</div>
+        <div style={{ fontSize: 11 }}>Broaden the region, segment, channel, product or period filters.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   8. PANEL — WATERFALL
+   ========================================================================== */
+function WaterfallPanel({ agg, deals }) {
+  const [mode, setMode] = useState('abs');
+  const [dim, setDim] = useState('segment');
+
+  const pareto = useMemo(function () {
+    const items = LEAK_KEYS.map(function (k) {
+      return { label: k.label, value: agg[k.key], color: k.color };
+    }).sort(function (a, b) { return b.value - a.value; });
+    const total = sumArr(items.map(function (i) { return i.value; })) || 1;
+    let cum = 0;
+    const cumPct = items.map(function (i) { cum += i.value; return (cum / total) * 100; });
+    return { items: items, cumPct: cumPct, total: total };
+  }, [agg]);
+
+  const decomposition = useMemo(function () {
+    const map = groupAggregate(deals, function (d) { return d[dim]; });
+    const rows = Array.from(map.values()).filter(function (r) { return r.list > 0; });
+    rows.sort(function (a, b) { return b.net - a.net; });
+    const series = COST_KEYS.concat(LEAK_KEYS.map(function (k) {
+      return { key: k.key, label: k.label, color: k.color };
+    }));
+    return { rows: rows, series: series };
+  }, [deals, dim]);
+
+  const dimOptions = [
+    { k: 'segment', label: 'Segment' },
+    { k: 'region', label: 'Region' },
+    { k: 'channel', label: 'Channel' },
+    { k: 'product', label: 'Product Line' }
+  ];
+
+  if (!agg.n) return <EmptyState />;
+
+  const leakPctOfList = leakageTotal(agg) / agg.list;
+
+  return (
+    <div className="grid" style={{ gap: 14 }}>
+      <div className="grid grid-2">
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">Price–to–Pocket Margin Waterfall</div>
+              <div className="card-desc">
+                Full realisation bridge from list price through every discount, allowance and cost layer
+                to pocket margin. {fmtPct(leakPctOfList)} of list value leaks before cost.
+              </div>
+            </div>
+            <div className="card-tools">
+              <button className={'mini-chip' + (mode === 'abs' ? ' active' : '')} onClick={function () { setMode('abs'); }}>Absolute $</button>
+              <button className={'mini-chip' + (mode === 'pct' ? ' active' : '')} onClick={function () { setMode('pct'); }}>% of List</button>
+            </div>
+          </div>
+          <WaterfallChart agg={agg} mode={mode} height={448} />
+        </div>
+
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">Leakage Pareto</div>
+              <div className="card-desc">
+                Value leakage components ranked by absolute impact, with cumulative share.
+                Total leakage {fmtMoney(pareto.total)}.
+              </div>
+            </div>
+          </div>
+          <Plot
+            height={448}
+            data={[
+              {
+                type: 'bar', orientation: 'h',
+                y: pareto.items.map(function (i) { return i.label; }).slice().reverse(),
+                x: pareto.items.map(function (i) { return i.value; }).slice().reverse(),
+                marker: { color: pareto.items.map(function (i) { return i.color; }).slice().reverse(), line: { width: 0 } },
+                name: 'Leakage',
+                hovertemplate: '<b>%{y}</b><br>$%{x:,.0f}<extra></extra>'
+              },
+              {
+                type: 'scatter', mode: 'lines+markers',
+                y: pareto.items.map(function (i) { return i.label; }).slice().reverse(),
+                x: pareto.cumPct.slice().reverse(),
+                xaxis: 'x2', name: 'Cumulative %',
+                line: { color: '#7dd3fc', width: 1.6, dash: 'dot' },
+                marker: { color: '#7dd3fc', size: 6 },
+                hovertemplate: 'Cumulative: %{x:.1f}%<extra></extra>'
+              }
+            ]}
+            layout={Object.assign({}, PLOT_BASE_LAYOUT, {
+              height: 448,
+              margin: { l: 148, r: 56, t: 34, b: 44 },
+              showlegend: false, bargap: 0.35,
+              xaxis: {
+                title: { text: 'Leakage (USD)', font: { size: 10, color: '#7f96b5' } },
+                gridcolor: 'rgba(255,255,255,0.055)',
+                tickprefix: '$', tickformat: '.2s', tickfont: { size: 10 }
+              },
+              xaxis2: {
+                overlaying: 'x', side: 'top', range: [0, 100],
+                title: { text: 'Cumulative %', font: { size: 10, color: '#7dd3fc' } },
+                ticksuffix: '%', tickfont: { size: 9.5, color: '#7dd3fc' },
+                showgrid: false, zeroline: false
+              },
+              yaxis: { tickfont: { size: 10.5, color: '#a9bcd6' }, automargin: true }
+            })}
+          />
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <div>
+            <div className="card-title">Price Decomposition by Dimension</div>
+            <div className="card-desc">
+              Every dollar of list price decomposed into pocket margin, cost layers and leakage.
+              The green base of each bar is the realised pocket margin rate.
+            </div>
+          </div>
+          <div className="card-tools">
+            {dimOptions.map(function (o) {
+              return <button key={o.k} className={'mini-chip' + (dim === o.k ? ' active' : '')} onClick={function () { setDim(o.k); }}>{o.label}</button>;
+            })}
+          </div>
+        </div>
+
+        <Plot
+          height={360}
+          data={decomposition.series.map(function (s) {
+            return {
+              type: 'bar', name: s.label,
+              x: decomposition.rows.map(function (r) { return r.key; }),
+              y: decomposition.rows.map(function (r) { return (r[s.key] / r.list) * 100; }),
+              marker: { color: s.color, line: { width: 0 } },
+              hovertemplate: '<b>%{x}</b><br>' + s.label + ': %{y:.1f}% of list<extra></extra>'
+            };
+          })}
+          layout={Object.assign({}, PLOT_BASE_LAYOUT, {
+            height: 360, barmode: 'stack', bargap: 0.42,
+            margin: { l: 58, r: 22, t: 14, b: 64 },
+            xaxis: { tickfont: { size: 10.5, color: '#a9bcd6' }, gridcolor: 'rgba(255,255,255,0.03)', zeroline: false },
+            yaxis: {
+              title: { text: '% of List Price', font: { size: 10, color: '#7f96b5' } },
+              gridcolor: 'rgba(255,255,255,0.055)', ticksuffix: '%', range: [0, 100], tickfont: { size: 10 }
+            },
+            legend: { orientation: 'h', y: -0.2, x: 0, font: { size: 10, color: '#8ba0be' }, bgcolor: 'rgba(0,0,0,0)' }
+          })}
+        />
+
+        <div className="legend-inline">
+          <span><i className="swatch" style={{ background: '#22c55e' }}></i> Pocket Margin</span>
+          <span><i className="swatch" style={{ background: '#475569' }}></i> COGS</span>
+          <span><i className="swatch" style={{ background: '#94a3b8' }}></i> Service &amp; Warranty</span>
+          <span><i className="swatch" style={{ background: '#ef4444' }}></i> Price Leakage</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   9. PANEL — DIAGNOSTICS
+   ========================================================================== */
+function DiagnosticsPanel({ agg, deals }) {
+  const discDist = useMemo(function () {
+    const bins = 30, maxD = 0.62;
+    const counts = new Array(bins).fill(0);
+    let weightedSum = 0, weightTotal = 0;
+    for (let i = 0; i < deals.length; i++) {
+      const d = deals[i];
+      const disc = clamp(d.discount, 0, maxD - 1e-6);
+      const bi = Math.min(bins - 1, Math.floor((disc / maxD) * bins));
+      counts[bi] += d.net;
+      weightedSum += disc * d.net;
+      weightTotal += d.net;
+    }
+    const avg = weightTotal ? weightedSum / weightTotal : 0;
+    return {
+      x: counts.map(function (_, i) { return ((i + 0.5) / bins) * maxD * 100; }),
+      y: counts,
+      avg: avg * 100
+    };
+  }, [deals]);
+
+  const scatter = useMemo(function () {
+    const groups = {};
+    SEGMENTS.forEach(function (s) { groups[s] = { x: [], y: [], size: [], text: [] }; });
+    let maxNet = 1;
+    for (let i = 0; i < deals.length; i++) if (deals[i].net > maxNet) maxNet = deals[i].net;
+
+    for (let i = 0; i < deals.length; i++) {
+      const d = deals[i];
+      const g = groups[d.segment];
+      g.x.push(d.discount * 100);
+      g.y.push(d.pocketPct * 100);
+      g.size.push(4 + Math.sqrt(d.net / maxNet) * 22);
+      g.text.push(d.customer + '<br>' + d.product + '<br>Net ' + fmtMoney(d.net) + '<br>Margin ' + fmtPct(d.pocketPct));
+    }
+    return { groups: groups };
+  }, [deals]);
+
+  const bandByProduct = useMemo(function () {
+    const map = groupAggregate(deals, function (d) { return d.product; });
+    return PRODUCT_NAMES.map(function (p) { return map.get(p); }).filter(Boolean);
+  }, [deals]);
+
+  if (!agg.n) return <EmptyState />;
+
+  const segColors = { 'Enterprise': '#38bdf8', 'Mid-Market': '#22c55e', 'SMB': '#f59e0b', 'Public Sector': '#a855f7' };
+
+  return (
+    <div className="grid" style={{ gap: 14 }}>
+      <div className="grid grid-2b">
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">Discount Depth Distribution</div>
+              <div className="card-desc">
+                Net-revenue weighted distribution of total realised discount (list to net).
+                Mean realised discount {discDist.avg.toFixed(1)}%.
+              </div>
+            </div>
+          </div>
+          <Plot
+            height={320}
+            data={[{
+              type: 'bar',
+              x: discDist.x, y: discDist.y,
+              marker: { color: '#38bdf8', opacity: 0.82, line: { width: 0 } },
+              hovertemplate: '%{x:.1f}% discount<br>Net revenue $%{y:,.0f}<extra></extra>',
+              name: 'Net Revenue'
+            }]}
+            layout={Object.assign({}, PLOT_BASE_LAYOUT, {
+              height: 320,
+              margin: { l: 62, r: 20, t: 18, b: 46 },
+              bargap: 0.04, showlegend: false,
+              xaxis: {
+                title: { text: 'Total Realised Discount (%)', font: { size: 10, color: '#7f96b5' } },
+                ticksuffix: '%', gridcolor: 'rgba(255,255,255,0.05)', tickfont: { size: 10 }
+              },
+              yaxis: {
+                title: { text: 'Net Revenue', font: { size: 10, color: '#7f96b5' } },
+                gridcolor: 'rgba(255,255,255,0.055)',
+                tickprefix: '$', tickformat: '.2s', tickfont: { size: 10 }
+              },
+              shapes: [{
+                type: 'line', x0: discDist.avg, x1: discDist.avg, y0: 0, y1: 1, yref: 'paper',
+                line: { color: '#f59e0b', width: 1.6, dash: 'dash' }
+              }],
+              annotations: [{
+                x: discDist.avg, y: 1, yref: 'paper', yanchor: 'bottom',
+                text: 'Mean ' + discDist.avg.toFixed(1) + '%',
+                showarrow: false, font: { size: 10, color: '#fcd34d' }
+              }]
+            })}
+          />
+        </div>
+
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">Discount vs. Pocket Margin</div>
+              <div className="card-desc">
+                Deal-level relationship between realised discount and pocket margin rate.
+                Bubble size is net revenue; colour identifies customer segment.
+              </div>
+            </div>
+          </div>
+          <Plot
+            height={320}
+            data={SEGMENTS.map(function (s) {
+              return {
+                type: 'scatter', mode: 'markers', name: s,
+                x: scatter.groups[s].x,
+                y: scatter.groups[s].y,
+                text: scatter.groups[s].text,
+                marker: {
+                  size: scatter.groups[s].size,
+                  color: segColors[s],
+                  opacity: 0.55,
+                  line: { width: 0 }
+                },
+                hovertemplate: '%{text}<br>Discount %{x:.1f}% · Margin %{y:.1f}%<extra>' + s + '</extra>'
+              };
+            })}
+            layout={Object.assign({}, PLOT_BASE_LAYOUT, {
+              height: 320,
+              margin: { l: 58, r: 20, t: 18, b: 46 },
+              hovermode: 'closest',
+              xaxis: {
+                title: { text: 'Realised Discount (%)', font: { size: 10, color: '#7f96b5' } },
+                ticksuffix: '%', gridcolor: 'rgba(255,255,255,0.05)', tickfont: { size: 10 }
+              },
+              yaxis: {
+                title: { text: 'Pocket Margin (%)', font: { size: 10, color: '#7f96b5' } },
+                ticksuffix: '%', gridcolor: 'rgba(255,255,255,0.055)', tickfont: { size: 10 },
+                zeroline: true, zerolinecolor: 'rgba(239,68,68,0.45)', zerolinewidth: 1.2
+              },
+              legend: { orientation: 'h', y: -0.19, font: { size: 10, color: '#8ba0be' }, bgcolor: 'rgba(0,0,0,0)' }
+            })}
+          />
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <div>
+            <div className="card-title">Price Band Compliance by Product Line</div>
+            <div className="card-desc">
+              Net revenue share by realised price band. Floor, target and stretch thresholds are
+              product-specific and derived from each line's cost structure.
+            </div>
+          </div>
+        </div>
+        <Plot
+          height={330}
+          data={[
+            { key: 'Below Floor', color: '#ef4444' },
+            { key: 'Below Target', color: '#f59e0b' },
+            { key: 'On Target', color: '#22c55e' },
+            { key: 'Premium', color: '#a855f7' }
+          ].map(function (b) {
+            return {
+              type: 'bar', name: b.key, orientation: 'h',
+              y: bandByProduct.map(function (r) { return r.key; }),
+              x: bandByProduct.map(function (r) { return r.net ? (r.bandNet[b.key] / r.net) * 100 : 0; }),
+              marker: { color: b.color, line: { width: 0 } },
+              hovertemplate: '<b>%{y}</b><br>' + b.key + ': %{x:.1f}% of net revenue<extra></extra>'
+            };
+          })}
+          layout={Object.assign({}, PLOT_BASE_LAYOUT, {
+            height: 330, barmode: 'stack', bargap: 0.4,
+            margin: { l: 140, r: 24, t: 14, b: 46 },
+            xaxis: {
+              title: { text: '% of Net Revenue', font: { size: 10, color: '#7f96b5' } },
+              ticksuffix: '%', range: [0, 100],
+              gridcolor: 'rgba(255,255,255,0.055)', tickfont: { size: 10 }
+            },
+            yaxis: { tickfont: { size: 11, color: '#a9bcd6' }, automargin: true },
+            legend: { orientation: 'h', y: -0.22, font: { size: 10, color: '#8ba0be' }, bgcolor: 'rgba(0,0,0,0)' }
+          })}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   10. PANEL — EXPLORER
+   ========================================================================== */
+const GROUP_DIMS = [
+  { k: 'customer', label: 'Customer' },
+  { k: 'product', label: 'Product Line' },
+  { k: 'region', label: 'Region' },
+  { k: 'channel', label: 'Channel' },
+  { k: 'segment', label: 'Segment' }
+];
+
+function ExplorerPanel({ deals }) {
+  const [groupDim, setGroupDim] = useState('customer');
+  const [sortKey, setSortKey] = useState('net');
+  const [sortDir, setSortDir] = useState('desc');
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState(null);
+
+  const rows = useMemo(function () {
+    const map = groupAggregate(deals, function (d) { return d[groupDim]; });
+    let arr = Array.from(map.values()).map(function (r) {
+      const dominantBand = BANDS.reduce(function (best, b) {
+        return r.bandNet[b] > (r.bandNet[best] || 0) ? b : best;
+      }, BANDS[0]);
+      return {
+        key: r.key,
+        deals: r.n,
+        net: r.net,
+        list: r.list,
+        pocket: r.pocket,
+        margin: r.net ? r.pocket / r.net : 0,
+        realization: r.list ? r.net / r.list : 0,
+        leakage: r.list ? leakageTotal(r) / r.list : 0,
+        belowFloor: r.net ? r.bandNet['Below Floor'] / r.net : 0,
+        band: dominantBand
+      };
+    });
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      arr = arr.filter(function (r) { return String(r.key).toLowerCase().indexOf(q) >= 0; });
+    }
+    arr.sort(function (a, b) {
+      const av = a[sortKey], bv = b[sortKey];
+      if (typeof av === 'string') return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+      return sortDir === 'asc' ? av - bv : bv - av;
+    });
+    return arr;
+  }, [deals, groupDim, sortKey, sortDir, search]);
+
+  const selectedAgg = useMemo(function () {
+    if (!selected) return null;
+    return groupAggregate(deals, function (d) { return d[groupDim]; }).get(selected) || null;
+  }, [deals, groupDim, selected]);
+
+  function onSort(k) {
+    if (k === sortKey) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(k); setSortDir('desc'); }
+  }
+
+  function exportCsv() {
+    const header = ['Group', 'Deals', 'List Price', 'Net Revenue', 'Pocket Margin', 'Margin %', 'Realization %', 'Leakage %', 'Below Floor % of Net', 'Dominant Band'];
+    const lines = [header.join(',')];
+    rows.forEach(function (r) {
+      lines.push([
+        '"' + String(r.key).replace(/"/g, '""') + '"',
+        r.deals,
+        Math.round(r.list),
+        Math.round(r.net),
+        Math.round(r.pocket),
+        (r.margin * 100).toFixed(2),
+        (r.realization * 100).toFixed(2),
+        (r.leakage * 100).toFixed(2),
+        (r.belowFloor * 100).toFixed(2),
+        r.band
+      ].join(','));
+    });
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pricing-explorer-' + groupDim + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function th(key, label, numeric) {
+    return (
+      <th className={numeric ? 'num' : ''} onClick={function () { onSort(key); }}>
+        {label}{sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
+      </th>
+    );
+  }
+
+  const labelFor = (function () {
+    const found = GROUP_DIMS.find(function (g) { return g.k === groupDim; });
+    return found ? found.label : 'Group';
+  })();
+
+  return (
+    <div className="card">
+      <div className="card-head">
+        <div>
+          <div className="card-title">Profitability Explorer — by {labelFor}</div>
+          <div className="card-desc">
+            {rows.length} groups · {fmtNum(sumArr(rows.map(function (r) { return r.deals; })))} deal lines ·
+            net revenue {fmtMoney(sumArr(rows.map(function (r) { return r.net; })))}. Click a row to drill down.
+          </div>
+        </div>
+        <div className="card-tools">
+          {GROUP_DIMS.map(function (g) {
+            return (
+              <button key={g.k}
+                className={'mini-chip' + (groupDim === g.k ? ' active' : '')}
+                onClick={function () { setGroupDim(g.k); setSelected(null); }}>
+                {g.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+        <input
+          type="search"
+          placeholder={'Search ' + labelFor.toLowerCase() + '…'}
+          value={search}
+          onChange={function (e) { setSearch(e.target.value); }}
+          style={{ width: 240 }}
+        />
+        <button className="btn" onClick={exportCsv}>Export CSV</button>
+        {selected ? <button className="btn" onClick={function () { setSelected(null); }}>Clear drill-down</button> : null}
+      </div>
+
+      <div className={selectedAgg ? 'grid grid-2' : ''}>
+        <div>
+          <div className="table-wrap">
+            <table className="data">
+              <thead>
+                <tr>
+                  {th('key', labelFor, false)}
+                  {th('deals', 'Deals', true)}
+                  {th('net', 'Net Revenue', true)}
+                  {th('pocket', 'Pocket Margin', true)}
+                  {th('margin', 'Margin %', true)}
+                  {th('realization', 'Realization', true)}
+                  {th('leakage', 'Leakage %', true)}
+                  {th('belowFloor', 'Below Floor', true)}
+                  {th('band', 'Band', false)}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.slice(0, 300).map(function (r) {
+                  return (
+                    <tr key={r.key}
+                        className={selected === r.key ? 'sel' : ''}
+                        onClick={function () { setSelected(selected === r.key ? null : r.key); }}>
+                      <td style={{ fontWeight: 600, color: '#e6edf7' }}>{r.key}</td>
+                      <td className="num">{fmtNum(r.deals)}</td>
+                      <td className="num">{fmtMoney(r.net)}</td>
+                      <td className="num" style={{ color: r.pocket >= 0 ? '#86efac' : '#fca5a5' }}>{fmtMoney(r.pocket)}</td>
+                      <td className="num" style={{ color: r.margin >= 0.2 ? '#86efac' : r.margin >= 0.1 ? '#fcd34d' : '#fca5a5' }}>
+                        {fmtPct(r.margin)}
+                      </td>
+                      <td className="num">
+                        <div className="bar-cell">
+                          <span>{fmtPct(r.realization)}</span>
+                          <span className="bar-track">
+                            <span className="bar-fill" style={{
+                              width: clamp((r.realization - 0.4) / 0.5 * 100, 0, 100) + '%',
+                              background: '#38bdf8'
+                            }}></span>
+                          </span>
+                        </div>
+                      </td>
+                      <td className="num" style={{ color: r.leakage > 0.35 ? '#fca5a5' : '#cbd8ea' }}>{fmtPct(r.leakage)}</td>
+                      <td className="num">
+                        <div className="bar-cell">
+                          <span style={{ color: r.belowFloor > 0.15 ? '#fca5a5' : '#cbd8ea' }}>{fmtPct(r.belowFloor)}</span>
+                          <span className="bar-track">
+                            <span className="bar-fill" style={{
+                              width: clamp(r.belowFloor * 100, 0, 100) + '%',
+                              background: '#ef4444'
+                            }}></span>
+                          </span>
+                        </div>
+                      </td>
+                      <td><BandBadge band={r.band} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {rows.length > 300 ? (
+            <div style={{ fontSize: 10.5, color: 'var(--muted-2)', marginTop: 8 }}>
+              Showing top 300 of {rows.length} groups. Refine with search or filters.
+            </div>
+          ) : null}
+        </div>
+
+        {selectedAgg ? (
+          <div className="card">
+            <div className="card-head">
+              <div>
+                <div className="card-title">{selected}</div>
+                <div className="card-desc">
+                  Drill-down waterfall for this {labelFor.toLowerCase()} —
+                  {selectedAgg.n} deal lines, {fmtMoney(selectedAgg.list)} list value.
+                </div>
+              </div>
+            </div>
+            <WaterfallChart agg={selectedAgg} mode="pct" height={330} showText={false} />
+            <div style={{ marginTop: 12 }}>
+              <div className="stat-row">
+                <span className="k">Net revenue</span>
+                <span className="v">{fmtMoney(selectedAgg.net)}</span>
+              </div>
+              <div className="stat-row">
+                <span className="k">Pocket margin</span>
+                <span className="v" style={{ color: selectedAgg.pocket >= 0 ? '#86efac' : '#fca5a5' }}>
+                  {fmtMoney(selectedAgg.pocket)}
+                </span>
+              </div>
+              <div className="stat-row">
+                <span className="k">Pocket margin %</span>
+                <span className="v">{fmtPct(selectedAgg.net ? selectedAgg.pocket / selectedAgg.net : 0)}</span>
+              </div>
+              <div className="stat-row">
+                <span className="k">Price realisation</span>
+                <span className="v">{fmtPct(selectedAgg.net / selectedAgg.list)}</span>
+              </div>
+              <div className="stat-row">
+                <span className="k">Revenue below floor</span>
+                <span className="v" style={{ color: '#fca5a5' }}>
+                  {fmtPct(selectedAgg.net ? selectedAgg.bandNet['Below Floor'] / selectedAgg.net : 0)}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   11. PANEL — SIMULATOR
+   ========================================================================== */
+function SimulatorPanel({ agg }) {
+  const [stdRed, setStdRed] = useState(12);
+  const [rebRed, setRebRed] = useState(10);
+  const [promoRed, setPromoRed] = useState(8);
+  const [offRed, setOffRed] = useState(15);
+  const [frtRed, setFrtRed] = useState(10);
+  const [vol, setVol] = useState(0);
+
+  const sim = useMemo(function () {
+    const vf = 1 + vol / 100;
+    const list2 = agg.list * vf;
+
+    const std2 = agg.std * vf * (1 - stdRed / 100);
+    const reb2 = agg.reb * vf * (1 - rebRed / 100);
+    const promo2 = agg.promo * vf * (1 - promoRed / 100);
+    const off2 = agg.off * vf * (1 - offRed / 100);
+    const frt2 = agg.freight * vf * (1 - frtRed / 100);
+    const comp2 = agg.comp * vf;
+    const terms2 = agg.terms * vf;
+
+    const invoice2 = list2 - std2 - reb2 - promo2 - comp2 - terms2;
+    const net2 = invoice2 - off2 - frt2;
+    const cogs2 = agg.cogs * vf;
+    const svc2 = agg.svc * vf;
+    const pocket2 = net2 - cogs2 - svc2;
+
+    const volumeEffect = (vf - 1) * agg.pocket;
+    const recStd = agg.std * vf * (stdRed / 100);
+    const recReb = agg.reb * vf * (rebRed / 100);
+    const recPromo = agg.promo * vf * (promoRed / 100);
+    const recOff = agg.off * vf * (offRed / 100);
+    const recFrt = agg.freight * vf * (frtRed / 100);
+
+    const delta = pocket2 - agg.pocket;
+
+    return {
+      list2: list2, net2: net2, pocket2: pocket2,
+      margin2: net2 ? pocket2 / net2 : 0,
+      margin0: agg.net ? agg.pocket / agg.net : 0,
+      leakage2: list2 ? (list2 - net2) / list2 : 0,
+      leakage0: agg.list ? (agg.list - agg.net) / agg.list : 0,
+      delta: delta,
+      bridge: [
+        { label: 'Volume / Mix', val: volumeEffect },
+        { label: 'Standard Discount Recovery', val: recStd },
+        { label: 'Contract Rebate Optimization', val: recReb },
+        { label: 'Promotion Efficiency', val: recPromo },
+        { label: 'Off-Invoice Reduction', val: recOff },
+        { label: 'Freight Optimization', val: recFrt }
+      ]
+    };
+  }, [agg, stdRed, rebRed, promoRed, offRed, frtRed, vol]);
+
+  const bridgeBuilt = useMemo(function () {
+    const steps = [
+      { label: 'Current Pocket Margin', type: 'absolute', val: agg.pocket }
+    ].concat(sim.bridge.map(function (b) {
+      return { label: b.label, type: 'relative', val: b.val };
+    })).concat([
+      { label: 'Simulated Pocket Margin', type: 'total', val: 0 }
+    ]);
+
+    let run = 0;
+    const y = [], text = [], measure = [], x = [];
+    steps.forEach(function (s) {
+      if (s.type === 'absolute') { run = s.val; y.push(s.val); text.push(fmtMoney(s.val)); }
+      else if (s.type === 'relative') { run += s.val; y.push(s.val); text.push(fmtMoney(s.val)); }
+      else { y.push(run); text.push(fmtMoney(run)); }
+      measure.push(s.type);
+      x.push(s.label);
+    });
+    return { x: x, y: y, text: text, measure: measure };
+  }, [agg, sim]);
+
+  if (!agg.n) return <EmptyState />;
+
+  const sliders = [
+    { label: 'Standard Discount Reduction', value: stdRed, set: setStdRed, max: 40, min: 0, unit: 'pp of discount' },
+    { label: 'Contract Rebate Optimization', value: rebRed, set: setRebRed, max: 50, min: 0, unit: 'pp of rebate' },
+    { label: 'Promotional Allowance Efficiency', value: promoRed, set: setPromoRed, max: 60, min: 0, unit: 'pp of promo' },
+    { label: 'Off-Invoice Rebate Reduction', value: offRed, set: setOffRed, max: 50, min: 0, unit: 'pp of rebate' },
+    { label: 'Freight & Logistics Optimization', value: frtRed, set: setFrtRed, max: 50, min: 0, unit: 'pp of freight' },
+    { label: 'Volume / Mix Uplift', value: vol, set: setVol, max: 20, min: -15, unit: '% volume' }
+  ];
+
+  return (
+    <div className="grid" style={{ gridTemplateColumns: 'minmax(0,340px) minmax(0,1fr)', gap: 14 }}>
+      <div className="card">
+        <div className="card-head">
+          <div>
+            <div className="card-title">Scenario Levers</div>
+            <div className="card-desc">
+              Adjust commercial levers to model the pocket-margin impact of a pricing initiative.
+              All effects are computed on the current filtered book of business.
+            </div>
+          </div>
+        </div>
+
+        {sliders.map(function (s) {
+          return (
+            <div className="slider-row" key={s.label}>
+              <div className="slider-head">
+                <span className="slider-name">{s.label}</span>
+                <span className="slider-val">{s.value}{s.unit === '% volume' ? '%' : '%'}</span>
+              </div>
+              <input
+                type="range"
+                min={s.min}
+                max={s.max}
+                step="1"
+                value={s.value}
+                onChange={function (e) { s.set(Number(e.target.value)); }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9.5, color: 'var(--muted-2)' }}>
+                <span>{s.min}{s.unit === '% volume' ? '%' : '%'}</span>
+                <span>{s.unit}</span>
+                <span>{s.max}%</span>
+              </div>
+            </div>
+          );
+        })}
+
+        <button
+          className="btn"
+          style={{ width: '100%', marginTop: 4 }}
+          onClick={function () { setStdRed(0); setRebRed(0); setPromoRed(0); setOffRed(0); setFrtRed(0); setVol(0); }}
+        >Reset Scenario</button>
+      </div>
+
+      <div className="grid" style={{ gap: 14, alignContent: 'start' }}>
+        <div className="kpis" style={{ marginBottom: 0 }}>
+          <Kpi
+            label="Simulated Pocket Margin"
+            value={fmtMoney(sim.pocket2)}
+            accent="#22c55e"
+            delta={agg.pocket !== 0 ? (sim.pocket2 - agg.pocket) / Math.abs(agg.pocket) : null}
+            deltaIsGood={sim.pocket2 >= agg.pocket}
+            sub={'vs ' + fmtMoney(agg.pocket) + ' today'}
+          />
+          <Kpi
+            label="Pocket Margin Rate"
+            value={fmtPct(sim.margin2)}
+            accent="#38bdf8"
+            delta={sim.margin2 - sim.margin0}
+            deltaIsGood={sim.margin2 >= sim.margin0}
+            sub={'(from ' + fmtPct(sim.margin0) + ')'}
+          />
+          <Kpi
+            label="Simulated Net Revenue"
+            value={fmtMoney(sim.net2)}
+            accent="#a855f7"
+            delta={agg.net !== 0 ? (sim.net2 - agg.net) / Math.abs(agg.net) : null}
+            deltaIsGood={sim.net2 >= agg.net}
+            sub={'vs ' + fmtMoney(agg.net) + ' today'}
+          />
+          <Kpi
+            label="Leakage Rate"
+            value={fmtPct(sim.leakage2)}
+            accent="#f59e0b"
+            delta={sim.leakage2 - sim.leakage0}
+            deltaIsGood={sim.leakage2 <= sim.leakage0}
+            sub={'(from ' + fmtPct(sim.leakage0) + ')'}
+          />
+        </div>
+
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">Pocket Margin Bridge — Current vs. Simulated</div>
+              <div className="card-desc">
+                Attribution of the projected margin change by commercial lever.
+                Net projected uplift {fmtMoney(sim.delta)}.
+              </div>
+            </div>
+          </div>
+          <Plot
+            height={380}
+            data={[{
+              type: 'waterfall',
+              orientation: 'v',
+              measure: bridgeBuilt.measure,
+              x: bridgeBuilt.x,
+              y: bridgeBuilt.y,
+              text: bridgeBuilt.text,
+              textposition: 'outside',
+              cliponaxis: false,
+              textfont: { size: 10, color: '#b8cae2' },
+              connector: { line: { color: 'rgba(160,190,225,0.3)', width: 1, dash: 'dot' } },
+              increasing: { marker: { color: '#22c55e' } },
+              decreasing: { marker: { color: '#ef4444' } },
+              totals: { marker: { color: '#3b82f6' } },
+              hovertemplate: '%{x}<br><b>%{text}</b><extra></extra>'
+            }]}
+            layout={Object.assign({}, PLOT_BASE_LAYOUT, {
+              height: 380,
+              margin: { l: 66, r: 24, t: 26, b: 96 },
+              showlegend: false,
+              xaxis: { tickangle: -32, tickfont: { size: 9.5, color: '#8ba0be' }, zeroline: false, showline: false },
+              yaxis: {
+                title: { text: 'Pocket Margin (USD)', font: { size: 10, color: '#7f96b5' } },
+                gridcolor: 'rgba(255,255,255,0.055)',
+                tickprefix: '$', tickformat: '.2s', tickfont: { size: 10 },
+                zeroline: true, zerolinecolor: 'rgba(255,255,255,0.2)'
+              }
+            })}
+          />
+        </div>
+
+        <div className="card">
+          <div className="card-head">
+            <div>
+              <div className="card-title">Lever Attribution Detail</div>
+              <div className="card-desc">Contribution of each lever to the projected pocket-margin change.</div>
+            </div>
+          </div>
+          <div style={{ marginTop: 4 }}>
+            {sim.bridge.map(function (b) {
+              return (
+                <div className="stat-row" key={b.label}>
+                  <span className="k">{b.label}</span>
+                  <span className="v" style={{ color: b.val >= 0 ? '#86efac' : '#fca5a5' }}>
+                    {b.val >= 0 ? '+' : ''}{fmtMoney(b.val)}
+                  </span>
+                </div>
+              );
+            })}
+            <div className="stat-row" style={{ borderTop: '1px solid var(--border)', marginTop: 4, paddingTop: 10 }}>
+              <span className="k" style={{ fontWeight: 600, color: '#e6edf7' }}>Total Projected Uplift</span>
+              <span className="v" style={{ color: sim.delta >= 0 ? '#86efac' : '#fca5a5', fontSize: 14 }}>
+                {sim.delta >= 0 ? '+' : ''}{fmtMoney(sim.delta)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   12. INSIGHTS ENGINE
+   ========================================================================== */
+function buildInsights(agg, deals) {
+  if (!agg.n) return [];
+  const out = [];
+
+  const leaks = LEAK_KEYS.map(function (k) { return { label: k.label, value: agg[k.key] }; })
+    .sort(function (a, b) { return b.value - a.value; });
+  const totalLeak = leakageTotal(agg) || 1;
+  const top = leaks[0];
+  out.push({
+    tone: 'warn',
+    text: <span><b>{top.label}</b> is the single largest value leak at <b>{fmtPct(top.value / agg.list)}</b> of list price ({fmtMoney(top.value)}), representing <b>{fmtPct(top.value / totalLeak, 0)}</b> of all leakage.</span>
+  });
+
+  const belowFloorNet = agg.bandNet['Below Floor'];
+  if (belowFloorNet > 0) {
+    out.push({
+      tone: 'bad',
+      text: <span><b>{fmtPct(belowFloorNet / agg.net)}</b> of net revenue ({fmtMoney(belowFloorNet)}) is booked <b>below the modelled price floor</b> across {fmtNum(agg.bandCount['Below Floor'])} deal lines.</span>
+    });
+  }
+
+  const regionMap = groupAggregate(deals, function (d) { return d.region; });
+  const regionRows = Array.from(regionMap.values()).filter(function (r) { return r.list > 0; })
+    .map(function (r) { return { k: r.key, r: r.net / r.list }; });
+  if (regionRows.length > 1) {
+    regionRows.sort(function (a, b) { return a.r - b.r; });
+    const lo = regionRows[0], hi = regionRows[regionRows.length - 1];
+    out.push({
+      tone: 'good',
+      text: <span><b>{hi.k}</b> realizes <b>{fmtPct(hi.r)}</b> of list vs. <b>{lo.k}</b> at <b>{fmtPct(lo.r)}</b> — a <b>{((hi.r - lo.r) * 100).toFixed(1)} pt</b> realization spread worth roughly {fmtMoney((hi.r - lo.r) * agg.list)} on this book.</span>
+    });
+  }
+
+  const prodMap = groupAggregate(deals, function (d) { return d.product; });
+  const prodRows = Array.from(prodMap.values()).filter(function (r) { return r.net > 0; })
+    .map(function (r) { return { k: r.key, margin: r.pocket / r.net, net: r.net }; });
+  if (prodRows.length > 1) {
+    prodRows.sort(function (a, b) { return a.margin - b.margin; });
+    const worst = prodRows[0];
+    out.push({
+      tone: worst.margin < 0.1 ? 'bad' : 'warn',
+      text: <span><b>{worst.k}</b> carries the lowest pocket margin rate at <b>{fmtPct(worst.margin)}</b> on {fmtMoney(worst.net)} of net revenue. Review discount authority thresholds for this line.</span>
+    });
+  }
+
+  const chanMap = groupAggregate(deals, function (d) { return d.channel; });
+  const chanRows = Array.from(chanMap.values()).filter(function (r) { return r.list > 0; })
+    .map(function (r) { return { k: r.key, leak: leakageTotal(r) / r.list, net: r.net }; });
+  if (chanRows.length > 1) {
+    chanRows.sort(function (a, b) { return b.leak - a.leak; });
+    const worstCh = chanRows[0];
+    out.push({
+      tone: 'warn',
+      text: <span>Leakage is highest in the <b>{worstCh.k}</b> channel at <b>{fmtPct(worstCh.leak)}</b> of list price, on {fmtMoney(worstCh.net)} of net revenue.</span>
+    });
+  }
+
+  const margin = agg.net ? agg.pocket / agg.net : 0;
+  out.push({
+    tone: margin >= 0.18 ? 'good' : 'warn',
+    text: <span>Overall pocket margin rate is <b>{fmtPct(margin)}</b> on {fmtMoney(agg.net)} of net revenue from {fmtNum(agg.n)} deal lines. Price realization stands at <b>{fmtPct(agg.net / agg.list)}</b> of list.</span>
+  });
+
+  return out;
+}
+
+/* ==========================================================================
+   13. MAIN APP
+   ========================================================================== */
+const TABS = [
+  { k: 'waterfall', label: 'Waterfall & Leakage' },
+  { k: 'diagnostics', label: 'Diagnostics' },
+  { k: 'explorer', label: 'Profitability Explorer' },
+  { k: 'simulator', label: 'Scenario Simulator' }
+];
+
+function App() {
+  const [tab, setTab] = useState('waterfall');
+  const [region, setRegion] = useState([]);
+  const [segment, setSegment] = useState([]);
+  const [channel, setChannel] = useState([]);
+  const [product, setProduct] = useState([]);
+  const [windowM, setWindowM] = useState(24);
+
+  const filtered = useMemo(function () {
+    const cutoff = 24 - windowM;
+    const out = [];
+    for (let i = 0; i < ALL_DEALS.length; i++) {
+      const d = ALL_DEALS[i];
+      if (d.mIdx < cutoff) continue;
+      if (region.length && region.indexOf(d.region) < 0) continue;
+      if (segment.length && segment.indexOf(d.segment) < 0) continue;
+      if (channel.length && channel.indexOf(d.channel) < 0) continue;
+      if (product.length && product.indexOf(d.product) < 0) continue;
+      out.push(d);
+    }
+    return out;
+  }, [region, segment, channel, product, windowM]);
+
+  const agg = useMemo(function () { return aggregate(filtered); }, [filtered]);
+
+  const monthly = useMemo(function () {
+    const map = new Map();
+    for (let i = 0; i < filtered.length; i++) {
+      const d = filtered[i];
+      let o = map.get(d.monthKey);
+      if (!o) {
+        o = { key: d.monthKey, label: d.monthLabel, idx: d.mIdx, list: 0, net: 0, pocket: 0, std: 0, deals: 0, belowFloorNet: 0 };
+        map.set(d.monthKey, o);
+      }
+      o.list += d.list; o.net += d.net; o.pocket += d.pocket; o.std += d.std; o.deals++;
+      if (d.band === 'Below Floor') o.belowFloorNet += d.net;
+    }
+    return Array.from(map.values()).sort(function (a, b) { return a.idx - b.idx; });
+  }, [filtered]);
+
+  const pop = useMemo(function () {
+    if (monthly.length < 4) return null;
+    const half = Math.floor(monthly.length / 2);
+    function base() { return { list: 0, net: 0, pocket: 0, std: 0, deals: 0, belowFloorNet: 0 }; }
+    function reducer(acc, o) {
+      acc.list += o.list; acc.net += o.net; acc.pocket += o.pocket;
+      acc.std += o.std; acc.deals += o.deals; acc.belowFloorNet += o.belowFloorNet;
+      return acc;
+    }
+    return {
+      cur: monthly.slice(half).reduce(reducer, base()),
+      prev: monthly.slice(0, half).reduce(reducer, base())
+    };
+  }, [monthly]);
+
+  const insights = useMemo(function () { return buildInsights(agg, filtered); }, [agg, filtered]);
+
+  function rel(c, p) { return p ? (c - p) / Math.abs(p) : null; }
+
+  const mNet = monthly.map(function (m) { return m.net; });
+  const mPocket = monthly.map(function (m) { return m.pocket; });
+  const mMargin = monthly.map(function (m) { return m.net ? m.pocket / m.net : 0; });
+  const mReal = monthly.map(function (m) { return m.list ? m.net / m.list : 0; });
+  const mLeak = monthly.map(function (m) { return m.list ? (m.list - m.net) / m.list : 0; });
+  const mBelow = monthly.map(function (m) { return m.net ? m.belowFloorNet / m.net : 0; });
+
+  const curMargin = agg.net ? agg.pocket / agg.net : 0;
+  const curReal = agg.list ? agg.net / agg.list : 0;
+  const curLeak = agg.list ? (agg.list - agg.net) / agg.list : 0;
+  const curBelow = agg.net ? agg.bandNet['Below Floor'] / agg.net : 0;
+
+  const prevMargin = pop && pop.prev.net ? pop.prev.pocket / pop.prev.net : 0;
+  const prevReal = pop && pop.prev.list ? pop.prev.net / pop.prev.list : 0;
+  const prevLeak = pop && pop.prev.list ? (pop.prev.list - pop.prev.net) / pop.prev.list : 0;
+  const prevBelow = pop && pop.prev.net ? pop.prev.belowFloorNet / pop.prev.net : 0;
+
+  const activeFilterCount = region.length + segment.length + channel.length + product.length + (windowM !== 24 ? 1 : 0);
+
+  function clearAll() {
+    setRegion([]); setSegment([]); setChannel([]); setProduct([]); setWindowM(24);
+  }
+
+  return (
+    <div>
+      <header className="appbar">
+        <div className="brand">
+          <div className="logo">ECI</div>
+          <div>
+            <h1>Enterprise Commercial Intelligence</h1>
+            <div className="module">Advanced Pricing Waterfall Intelligence</div>
+            <div className="subtitle">
+              Price realisation, leakage attribution and pocket-margin diagnostics across the commercial book of business
+            </div>
+          </div>
+        </div>
+        <div className="appbar-right">
+          <span className="pill"><span className="dot"></span> Live model · {fmtNum(ALL_DEALS.length)} deal lines</span>
+          <span className="pill">FY window: {MONTHS[0].label} – {MONTHS[MONTHS.length - 1].label}</span>
+          <button className="btn" onClick={clearAll} disabled={activeFilterCount === 0}>
+            Reset filters{activeFilterCount ? ' (' + activeFilterCount + ')' : ''}
+          </button>
+        </div>
+      </header>
+
+      <div className="filters">
+        <FilterGroup label="Region" options={REGIONS} selected={region} onChange={setRegion} />
+        <FilterGroup label="Segment" options={SEGMENTS} selected={segment} onChange={setSegment} />
+        <FilterGroup label="Channel" options={CHANNELS} selected={channel} onChange={setChannel} />
+        <FilterGroup label="Product" options={PRODUCT_NAMES} selected={product} onChange={setProduct} />
+        <div className="fg">
+          <span className="fg-label">Period</span>
+          <div className="chips">
+            {[3, 6, 12, 24].map(function (w) {
+              return (
+                <button key={w} className={'chip' + (windowM === w ? ' active' : '')} onClick={function () { setWindowM(w); }}>
+                  {w === 24 ? 'All 24 months' : 'Last ' + w + ' months'}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <main className="main">
+        <section className="kpis">
+          <Kpi
+            label="Net Revenue"
+            value={fmtMoney(agg.net)}
+            accent="#38bdf8"
+            sparkValues={mNet}
+            sparkColor="#38bdf8"
+            delta={pop ? rel(pop.cur.net, pop.prev.net) : null}
+            deltaIsGood={pop ? pop.cur.net >= pop.prev.net : true}
+            sub={pop ? 'vs prior period' : 'single-period view'}
+          />
+          <Kpi
+            label="Pocket Margin"
+            value={fmtMoney(agg.pocket)}
+            accent="#22c55e"
+            sparkValues={mPocket}
+            sparkColor="#22c55e"
+            delta={pop ? rel(pop.cur.pocket, pop.prev.pocket) : null}
+            deltaIsGood={pop ? pop.cur.pocket >= pop.prev.pocket : true}
+            sub={pop ? 'vs prior period' : 'single-period view'}
+          />
+          <Kpi
+            label="Pocket Margin Rate"
+            value={fmtPct(curMargin)}
+            accent="#a855f7"
+            sparkValues={mMargin}
+            sparkColor="#a855f7"
+            delta={pop ? curMargin - prevMargin : null}
+            deltaIsGood={curMargin >= prevMargin}
+            sub={'on ' + fmtMoney(agg.net) + ' net'}
+          />
+          <Kpi
+            label="Price Realization"
+            value={fmtPct(curReal)}
+            accent="#14b8a6"
+            sparkValues={mReal}
+            sparkColor="#14b8a6"
+            delta={pop ? curReal - prevReal : null}
+            deltaIsGood={curReal >= prevReal}
+            sub={'of ' + fmtMoney(agg.list) + ' list'}
+          />
+          <Kpi
+            label="Total Leakage"
+            value={fmtPct(curLeak)}
+            accent="#ef4444"
+            sparkValues={mLeak}
+            sparkColor="#ef4444"
+            delta={pop ? curLeak - prevLeak : null}
+            deltaIsGood={curLeak <= prevLeak}
+            sub={fmtMoney(agg.list - agg.net) + ' of list value'}
+          />
+          <Kpi
+            label="Revenue Below Floor"
+            value={fmtPct(curBelow)}
+            accent="#f59e0b"
+            sparkValues={mBelow}
+            sparkColor="#f59e0b"
+            delta={pop ? curBelow - prevBelow : null}
+            deltaIsGood={curBelow <= prevBelow}
+            sub={fmtNum(agg.bandCount['Below Floor']) + ' deal lines'}
+          />
+        </section>
+
+        <section className="insights" style={{ marginBottom: 18 }}>
+          {insights.map(function (ins, i) {
+            return (
+              <div key={i} className={'insight' + (ins.tone === 'warn' ? ' warn' : ins.tone === 'bad' ? ' bad' : ins.tone === 'good' ? ' good' : '')}>
+                {ins.text}
+              </div>
+            );
+          })}
+        </section>
+
+        <nav className="tabs">
+          {TABS.map(function (t) {
+            return (
+              <button key={t.k} className={'tab' + (tab === t.k ? ' active' : '')} onClick={function () { setTab(t.k); }}>
+                {t.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div>
+          {tab === 'waterfall' ? <WaterfallPanel agg={agg} deals={filtered} /> : null}
+          {tab === 'diagnostics' ? <DiagnosticsPanel agg={agg} deals={filtered} /> : null}
+          {tab === 'explorer' ? <ExplorerPanel deals={filtered} /> : null}
+          {tab === 'simulator' ? <SimulatorPanel agg={agg} /> : null}
+        </div>
+
+        <footer className="footer">
+          <div>
+            <b style={{ color: '#8ba0be' }}>Enterprise Commercial Intelligence</b> · Advanced Pricing Waterfall Intelligence ·
+            Figures are derived from a synthetic, seeded B2B enterprise pricing dataset generated entirely in the browser.
+            Not connected to any live system.
+          </div>
+          <div>
+            {fmtNum(agg.n)} deal lines · {fmtNum(new Set(filtered.map(function (d) { return d.customerId; })).size)} customers ·
+            {fmtNum(new Set(filtered.map(function (d) { return d.product; })).size)} product lines
+          </div>
+        </footer>
+      </main>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   14. MOUNT
+   ========================================================================== */
+const __rootEl = document.getElementById('root');
+ReactDOM.createRoot(__rootEl).render(<App />);
+</script>
+
+<!-- ============================ BOOTSTRAP ============================ -->
+<script>
+(function () {
+  var rootEl = document.getElementById('root');
+
+  function showError(title, detail) {
+    if (!rootEl) return;
+    var safe = String(detail == null ? 'Unknown error' : detail)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    rootEl.innerHTML =
+      '<div class="boot-error">' +
+        '<h2>' + title + '</h2>' +
+        '<pre>' + safe + '</pre>' +
+        '<p>This app needs to load React, Babel and Plotly from a CDN. ' +
+        'Check your network / firewall and reload the page.</p>' +
+      '</div>';
+  }
+
+  window.addEventListener('error', function (e) {
+    console.error('[ECI] runtime error', e.error || e.message);
+    if (rootEl && rootEl.querySelector('.boot')) {
+      showError('Runtime error', (e.error && e.error.stack) || e.message);
+    }
+  });
+
+  function boot() {
+    if (!window.React || !window.ReactDOM) {
+      return showError('React failed to load',
+        'window.React = ' + (typeof window.React) + '\nwindow.ReactDOM = ' + (typeof window.ReactDOM) +
+        '\n\nThe React UMD bundles could not be fetched from cdn.jsdelivr.net or unpkg.com.');
+    }
+    if (!window.Babel) {
+      return showError('Babel failed to load',
+        'window.Babel is undefined. @babel/standalone could not be fetched from cdn.jsdelivr.net or unpkg.com.');
+    }
+    if (!window.Plotly) {
+      console.warn('[ECI] Plotly not loaded — charts will show a placeholder.');
+    }
+
+    var srcEl = document.getElementById('app-source');
+    if (!srcEl) return showError('Application source missing', 'Could not find #app-source.');
+
+    var compiled;
+    try {
+      compiled = window.Babel.transform(srcEl.textContent, {
+        presets: ['react'],
+        sourceType: 'script',
+        compact: false
+      }).code;
+    } catch (err) {
+      return showError('Compile error', (err && err.message) || err);
+    }
+
+    try {
+      /* Execute the compiled bundle. */
+      var runner = new Function(compiled);
+      runner();
+      console.log('[ECI] Application booted successfully.');
+    } catch (err) {
+      showError('Application error', (err && err.stack) || (err && err.message) || err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+</body>
+</html>
